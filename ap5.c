@@ -23,3 +23,14 @@ float intTofloat(int valor){
 	convertido = (float)valor;
 	return convertido;
 }
+
+int contador_eh_par(int contador){
+	if(contador%2==0){
+		printf("Numero eh par\n");
+		return 1;
+	}
+	else{
+		printf("Numero eh impar\n");
+		return 0;
+	}
+}

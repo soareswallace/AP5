@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void imprimir(float valor){
-	printf("O valor eh: %f\n, valor");
+void imprimir(double valor){
+	printf("O valor eh: %lf\n" , valor);
 }
 //essa funcao pode ser util na prova porque ela testa
 //cuidado para nao por um inteiro na fpu. nao pode

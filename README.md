@@ -1,6 +1,7 @@
 # AP5
 
 Assembly chamando C
+
 nasm -f elf arquivo.asm -o objetoasm.o
 gcc -c arquivoc.c
 gcc -o objetofinal arquivoc.o objetoasm.o

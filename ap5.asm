@@ -6,6 +6,7 @@ SECTION .text
 global main
 main:
 	call lerValor ;chama a funcao ler valor, e o resultado vem para 
+	fsin ; calcula o seno de quem ta em st0
 	fst qword[valorLido] ;como lerValor retornou float, ele fica em st0
 	push dword[valorLido+4] ;push para salvar na pilha
 	push dword[valorLido]

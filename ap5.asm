@@ -3,6 +3,7 @@ SECTION .data
 	valorLido dq 0.0
 	seno dq 0.0
 	maxDiff dq 0.0
+	contador dd 0
 SECTION .text
 global main
 main:

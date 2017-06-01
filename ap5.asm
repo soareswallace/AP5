@@ -26,15 +26,11 @@ main:
 		jmp cont_impar
 
 		cont_par:
-			fmul st0, st0
 
 
 ;to burro, como faco para fazer 2n+1, sendo n minha iteracao atual
 		cont_impar:
-			xor ecx, ecx
-			m
-			fld1
-			fmul st0, st1
+			
 
 
 

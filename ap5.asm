@@ -1,23 +1,29 @@
 extern lerValor, lerDiferenca, imprimir, intTofloat, contador_eh_par
 SECTION .data
 	valorLido dq 0.0
-	sin dq 0.0
 	maxDiff dq 0.0
-	contador dd 1
-	factorial dq 0.0
+	fator dd 1 ;fator = 2n+1
+	angulo dq 0.0
+	iteracao dd 0 ; iteracao = n
+	aux dd 0;
 SECTION .text
 global main
 main:
 	call lerDiferenca
-;	fstp qword[maxDiff]
+	fstp qword[maxDiff]
 	call lerValor ;chama a funcao ler valor, e o resultado vem para 
 ;	fsin ; calcula o seno de quem ta em st0
 ;	fst qword[sin] ;como lerValor retornou float, ele fica em st0
-	mov ebx, [contador] ;ja passamos pela iteracao 0
-	add ebx, 1 ;iteracao 1 comeca aqui
+	fst qword[angulo]
+	xor ebx, ebx
+	add ebx, 3 ;iteracao 1 comeca aqui, setamos isso para comecar 2n+1
+	mov [fator], ebx ;ja passamos pela iteracao 0, ebx = 2n+1
+	xor ecx, ecx
+	add ecx, 1
+	mov [iteracao], ecx
 
 	calculo_do_fatorial:
-		push ebx
+		push ecx
 		call contador_eh_par ;percebi o padrao. quando estamos na iteracao n impar
 							;, o sinal eh negativo, se for par=positivo
 		add esp, 4 ;como passamos um parametro, ajusta a pilha em 4bytes
@@ -29,7 +35,42 @@ main:
 
 
 ;to burro, como faco para fazer 2n+1, sendo n minha iteracao atual
-		cont_impar:
+		cont_impar_first:
+			fld dword[iteracao] ;coloca a itercao no topo
+			fld qword[angulo]
+			fmul st0, st0 ; faco x*x
+			add ecx, 1
+
+			mov [aux], ecx
+			fld dword[aux]
+			fmulp st2, st0 ;comeco o fatorial
+
+			loop_impar:
+				fld qword[angulo]
+				fmulp st1, st0
+				add ecx, 1
+				mov [aux], ecx
+				fld dword[aux]
+				fmulp st2, st0
+				cmp ecx, ebx
+				je fim_contas
+				j loop_impar
+
+		fim_contas:
+			add ebx, 2 ;ja reajusta 2n+1 para a prox iteracao
+			mov [fator], ebx
+			mov ecx, [iteracao] ;reajusta a iteracao
+			add ecx, 1
+			mov [iteracao], ecx;ja manda para memoria para checagem par/impar
+			fdivrp st1, st0 ;topo/st1
+			fld1 ;carrego 1 no topo
+			fld1
+			fadd st0, st1
+			fsubp st1, st0 ;coloquei -1 no topo
+
+
+
+		comparar: ;ver se o erro eh aceitavel
 			
 
 

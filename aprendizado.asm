@@ -14,7 +14,6 @@ main:
 	push dword[var] ;empilha var para que possa ser impressa
 	call imprimir ; funcao imprimir
 	add esp, 4 ;reajustando a pilha voltando ao ESP antigo
-
 	mov eax, 1
 	mov ebx, 0
 	int 80h

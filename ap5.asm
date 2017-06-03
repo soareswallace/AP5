@@ -75,7 +75,7 @@ main:
 			fldz
 			fadd st0, st1
 			fsub st0, st3;guarda a diferenca no topo
-			fstp qword[test_variable]
+			fst qword[test_variable]
 			
 			jmp comparar
 
@@ -121,16 +121,27 @@ main:
 			fldz
 			fadd st0, st1
 			fsubr st0, st3;guarda a diferenca no topo
-			fstp qword[test_variable]
+			fst qword[test_variable]
 			
 			jmp comparar
 
 		comparar: ;ver se o erro eh aceitavel
-			fld qword[test_variable]
+
+
+		;	fld qword[test_variable]
 			fldz
 			fcomip st0, st1
-			jl inverter_sinal
+			jg inverter_sinal
 			jmp verificar_diferenca
+
+
+
+			verificar_diferenca:
+			
+				mov ecx, [iteracao]
+				fcomip st0, st2
+				jl fim
+				jmp calculo_do_fatorial
 
 			inverter_sinal:
 				fld1
@@ -138,22 +149,7 @@ main:
 				fadd st0, st1
 				fsubp st1, st0
 				fmulp st1, st0
-
-
-			verificar_diferenca:
-
-				fst qword[debug]
-				push dword[debug+4]
-				push dword[debug]
-				call debugger
-				add esp, 4
-				;jmp fim
-
-				mov ecx, [iteracao]
-				fcomip st0, st2
-				jle fim
-				jmp calculo_do_fatorial
-
+				jmp verificar_diferenca
 	fim:
 	push dword[test_variable+4]
 	push dword[test_variable]

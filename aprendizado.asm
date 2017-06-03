@@ -7,6 +7,7 @@ global main
 main:
 	call pegan ;Chama a funcao em C, que retorna um numero inteiro
 	push eax ;retorno de funcao Inteiro eh guardado no EAX, por isso empilhamos a conversao
+	fmul st0, st0 ; faco x*x
 	call intparserfloat ;chama a funcao que ira converter de inteiro para float, o retorno vai para st0
 	add esp, 4 ; como passamos 1 parametro, ajustamos pilha por 4, se fossem 2 - 8 e...
 	fst qword[var] ;colocamos o resultado em float(st0) na variavel var

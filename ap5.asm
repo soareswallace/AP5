@@ -6,14 +6,19 @@ SECTION .data
 	angulo dq 0.0
 	iteracao dd 0 ; iteracao = n
 	aux dd 0;
+	sin dq 0.0
 SECTION .text
 global main
 main:
 	call lerDiferenca
 	fstp qword[maxDiff]
 	call lerValor ;chama a funcao ler valor, e o resultado vem para 
-;	fsin ; calcula o seno de quem ta em st0
-;	fst qword[sin] ;como lerValor retornou float, ele fica em st0
+	fldz
+	fadd st0, st1
+	fsin ; calcula o seno de quem ta em st0
+	fst qword[sin] ;como lerValor retornou float, ele fica em st0
+	fxch st2
+	fxch st1; top:x -> diff -> sin(x): bottom
 	fst qword[angulo]
 	xor ebx, ebx
 	add ebx, 3 ;iteracao 1 comeca aqui, setamos isso para comecar 2n+1
@@ -36,10 +41,12 @@ main:
 
 ;to burro, como faco para fazer 2n+1, sendo n minha iteracao atual
 		cont_impar_first:
-			fld dword[iteracao] ;coloca a itercao no topo
+			fld dword[fator] ;coloca a itercao no topo
 			fld qword[angulo]
 			fmul st0, st0 ; faco x*x
-			add ecx, 1
+			xor ecx, ecx
+			mov ecx, [fator]
+			dec ecx
 
 			mov [aux], ecx
 			fld dword[aux]
@@ -48,25 +55,30 @@ main:
 			loop_impar:
 				fld qword[angulo]
 				fmulp st1, st0
-				add ecx, 1
+				dec ecx
 				mov [aux], ecx
 				fld dword[aux]
 				fmulp st2, st0
-				cmp ecx, ebx
+				cmp ecx, 1
 				je fim_contas
-				j loop_impar
+				jmp loop_impar
 
-		fim_contas:
+		fim_contas_impar:
 			add ebx, 2 ;ja reajusta 2n+1 para a prox iteracao
 			mov [fator], ebx
-			mov ecx, [iteracao] ;reajusta a iteracao
-			add ecx, 1
+			mov ecx, [iteracao] 
+			inc ecx
 			mov [iteracao], ecx;ja manda para memoria para checagem par/impar
 			fdivrp st1, st0 ;topo/st1
 			fld1 ;carrego 1 no topo
 			fld1
 			fadd st0, st1
 			fsubp st1, st0 ;coloquei -1 no topo
+			fmulp st1, st0
+			faddp st1, st0 ;atual resultado da serie aqui
+			fldz
+			fadd st0, st1
+
 
 
 

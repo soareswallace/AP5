@@ -34,11 +34,11 @@ float intTofloat(int valor){
 
 int contador_eh_par(int contador){
 	if(contador%2==0){
-		printf("Numero eh par\n");
+		printf("Numero eh par: %d\n", contador);
 		return 1;
 	}
 	else{
-		printf("Numero eh impar\n");
+		printf("Numero eh impar: %d\n", contador);
 		return 0;
 	}
 }

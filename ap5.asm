@@ -12,7 +12,7 @@ SECTION .text
 global main
 main:
 	call lerDiferenca
-	fstp qword[maxDiff]
+	fst qword[maxDiff]
 	call lerValor ;chama a funcao ler valor, e o resultado vem para 
 	fldz
 	fadd st0, st1
@@ -129,12 +129,12 @@ main:
 		inverter_sinal:	
 			xor ecx, ecx
 			dec ecx
-			mul eax, ecx
+			mul ecx
 			jmp teste_real
 
 	fim:
-	push qword[test_variable+4]
-	push qword[test_variable]
+	push dword[test_variable+4]
+	push dword[test_variable]
 	call imprimir_resultado
 	add esp, 4
 

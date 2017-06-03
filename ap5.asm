@@ -1,4 +1,4 @@
-extern lerValor, lerDiferenca, imprimir, intTofloat, contador_eh_par
+extern lerValor, lerDiferenca, imprimir, intTofloat, contador_eh_par, imprimir_resultado
 SECTION .data
 	valorLido dq 0.0
 	maxDiff dq 0.0
@@ -7,6 +7,7 @@ SECTION .data
 	iteracao dd 0 ; iteracao = n
 	aux dd 0;
 	sin dq 0.0
+	test_variable dq 0.0
 SECTION .text
 global main
 main:
@@ -28,15 +29,16 @@ main:
 	mov [iteracao], ecx
 
 	calculo_do_fatorial:
+		xor eax, eax
 		push ecx
 		call contador_eh_par ;percebi o padrao. quando estamos na iteracao n impar
 							;, o sinal eh negativo, se for par=positivo
 		add esp, 4 ;como passamos um parametro, ajusta a pilha em 4bytes
 		cmp eax, 1 ;como a funcao contador_eh_par retorno um int, ele eh salvo em eax
-		je cont_par
-		jmp cont_impar
+		je cont_par_first
+		jmp cont_impar_first
 
-		cont_par:
+		cont_par_first:
 			fld dword[fator] ;coloca a itercao no topo
 			fld qword[angulo]
 			fmul st0, st0 ; faco x*x
@@ -46,6 +48,7 @@ main:
 			mov [aux], ecx
 			fld dword[aux]
 			fmulp st2, st0
+			
 			loop_par:
 				fld dword[angulo]
 				fmulp st1, st0
@@ -57,18 +60,20 @@ main:
 				je fim_contas_par
 				jmp loop_par
 
-			fim_contas_par:
-				add ebx, 2
-				mov [fator], ebx
-				mov ecx, [iteracao]
-				inc ecx
-				mov [iteracao], ecx
-				fdivrp st1, st0 ;ultimo valor no topo
+		fim_contas_par:
+			add ebx, 2
+			mov [fator], ebx
+			mov ecx, [iteracao]
+			inc ecx
+			mov [iteracao], ecx
+			fdivrp st1, st0 ;ultimo valor no topo
+			faddp st1, st0 ;resultado atual da serie
+			fldz
+			fadd st0, st1
+			fsub st0, st3;guarda a diferenca no topo
+			fstp qword[test_variable]
+			jmp comparar
 
-
-
-
-;to burro, como faco para fazer 2n+1, sendo n minha iteracao atual
 		cont_impar_first:
 			fld dword[fator] ;coloca a itercao no topo
 			fld qword[angulo]
@@ -104,17 +109,33 @@ main:
 			fsubp st1, st0 ;coloquei -1 no topo => st1-st0
 			fmulp st1, st0
 			faddp st1, st0 ;atual resultado da serie aqui
+			fldz
+			fadd st0, st1
+			fsub st0, st3;guarda a diferenca no topo
+			fstp qword[test_variable]
+			jmp comparar
 
 		comparar: ;ver se o erro eh aceitavel
-			
+		mov eax, [test_variable]
+		cmp eax, 0
+		jl inverter_sinal
 
+		teste_real:
+			mov ecx, [maxDiff]
+			cmp ecx, eax
+			jl fim
+			jmp calculo_do_fatorial
 
+		inverter_sinal:	
+			xor ecx, ecx
+			dec ecx
+			mul eax, ecx
+			jmp teste_real
 
-
-
-	push dword[sin+4] ;push para salvar na pilha
-	push dword[sin] ;
-	call imprimir
+	fim:
+	push qword[test_variable+4]
+	push qword[test_variable]
+	call imprimir_resultado
 	add esp, 4
 
 	mov eax, 1

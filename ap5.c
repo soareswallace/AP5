@@ -18,6 +18,10 @@ void imprimir(double valor){
 	printf("O valor do seno e: %lf\n" , valor);
 }
 
+void imprimir(double valor){
+	printf("A diferenca eh: %lf\n" , valor);
+}
+
 float intTofloat(int valor){
 	float convertido;
 	convertido = (float)valor;

@@ -18,6 +18,10 @@ void imprimir(double valor){
 	printf("O valor do seno e: %lf\n" , valor);
 }
 
+void debugger(double valor){
+	printf("DEBUG: %lf\n" , valor);
+}
+
 void imprimir_resultado(double valor){
 	printf("A diferenca eh: %lf\n" , valor);
 }

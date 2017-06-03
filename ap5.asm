@@ -1,12 +1,14 @@
-extern lerValor, lerDiferenca, imprimir, intTofloat, contador_eh_par, imprimir_resultado
+extern lerValor, lerDiferenca, imprimir, intTofloat, contador_eh_par, imprimir_resultado, debugger
 SECTION .data
 	valorLido dq 0.0
 	maxDiff dq 0.0
-	fator dd 1 ;fator = 2n+1
+	fator dq 3.0 ;fator = 2n+1
+	fatorial dq 3.0
 	angulo dq 0.0
 	iteracao dd 0 ; iteracao = n
-	aux dd 0;
+	aux dq 0.0;
 	sin dq 0.0
+	debug dq 0.0
 	test_variable dq 0.0
 SECTION .text
 global main
@@ -61,8 +63,11 @@ main:
 				jmp loop_par
 
 		fim_contas_par:
+			xor ebx, ebx
+			mov ebx, [fator]
 			add ebx, 2
 			mov [fator], ebx
+			xor ecx, ecx
 			mov ecx, [iteracao]
 			inc ecx
 			mov [iteracao], ecx
@@ -75,34 +80,42 @@ main:
 			jmp comparar
 
 		cont_impar_first:
-			fld dword[fator] ;coloca a itercao no topo
+
+			fld qword[fatorial] ;coloca a itercao no topo
 			fld qword[angulo]
 			fmul st0, st0 ; faco x*x
-			xor ecx, ecx
-			mov ecx, [fator]
-			dec ecx
-			mov [aux], ecx
-			fld dword[aux]
-			fmulp st2, st0 ;comeco o fatorial
+			fld1
+			fld qword[fatorial]
+			fsubrp st1, st0
+			fst qword[fator]			
 
 			loop_impar:
+				fmulp st2, st0
 				fld qword[angulo]
 				fmulp st1, st0
-				dec ecx
-				mov [aux], ecx
-				fld dword[aux]
-				fmulp st2, st0
-				cmp ecx, 1
-				je fim_contas_impar
+				fld1
+				fld qword[fator]
+				fsubrp st1, st0
+				fst qword[fator]
+				fld1				
+				fcomip st0, st1
+				
+				jne fim_contas_impar
 				jmp loop_impar
 
 		fim_contas_impar:
-			add ebx, 2 ;ja reajusta 2n+1 para a prox iteracao
-			mov [fator], ebx
-			mov ecx, [iteracao] 
-			inc ecx
-			mov [iteracao], ecx;ja manda para memoria para checagem par/impar
+			fmulp st2, st0
 			fdivrp st1, st0 ;st0/st1 ultimo valor no topo
+			fld qword[fatorial]
+			fld1
+			fld1
+			faddp st1, st0
+			faddp st1, st0
+			fstp qword[fatorial]
+
+
+
+
 			fld1 ;carrego 1 no topo
 			fld1
 			fadd st0, st1
@@ -113,6 +126,12 @@ main:
 			fadd st0, st1
 			fsub st0, st3;guarda a diferenca no topo
 			fstp qword[test_variable]
+
+			;push dword[test_variable+4]
+			;push dword[test_variable]
+			;call debugger
+			;add esp, 4
+			
 			jmp comparar
 
 		comparar: ;ver se o erro eh aceitavel
@@ -124,6 +143,8 @@ main:
 			mov ecx, [maxDiff]
 			cmp ecx, eax
 			jl fim
+			xor ecx, ecx
+			mov ecx, [iteracao]
 			jmp calculo_do_fatorial
 
 		inverter_sinal:	

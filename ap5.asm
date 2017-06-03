@@ -37,6 +37,29 @@ main:
 		jmp cont_impar
 
 		cont_par:
+			fld dword[fator] ;coloca a itercao no topo
+			fld qword[angulo]
+			fmul st0, st0 ; faco x*x
+			xor ecx, ecx
+			mov ecx, [fator]
+			dec ecx
+			mov [aux], ecx
+			fld dword[aux]
+			fmulp st2, st0
+			loop_par:
+				fld dword[angulo]
+				fmulp st1, st0
+				dec ecx
+				mov [aux], ecx
+				fld dword[aux]
+				fmulp st2, st0
+				cmp ecx, 1
+				je fim_contas_par
+				jmp loop_par
+
+			fim_contas_par:
+				
+
 
 
 ;to burro, como faco para fazer 2n+1, sendo n minha iteracao atual
@@ -47,7 +70,6 @@ main:
 			xor ecx, ecx
 			mov ecx, [fator]
 			dec ecx
-
 			mov [aux], ecx
 			fld dword[aux]
 			fmulp st2, st0 ;comeco o fatorial
@@ -60,7 +82,7 @@ main:
 				fld dword[aux]
 				fmulp st2, st0
 				cmp ecx, 1
-				je fim_contas
+				je fim_contas_impar
 				jmp loop_impar
 
 		fim_contas_impar:
@@ -69,15 +91,15 @@ main:
 			mov ecx, [iteracao] 
 			inc ecx
 			mov [iteracao], ecx;ja manda para memoria para checagem par/impar
-			fdivrp st1, st0 ;topo/st1
+			fdivrp st1, st0 ;st0/st1
 			fld1 ;carrego 1 no topo
 			fld1
 			fadd st0, st1
-			fsubp st1, st0 ;coloquei -1 no topo
+			fsubp st1, st0 ;coloquei -1 no topo => st1-st0
 			fmulp st1, st0
 			faddp st1, st0 ;atual resultado da serie aqui
 			fldz
-			fadd st0, st1
+			fadd st0, st1 ;parti para a comparacao de erro
 
 
 

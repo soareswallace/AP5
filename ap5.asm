@@ -58,7 +58,13 @@ main:
 				jmp loop_par
 
 			fim_contas_par:
-				
+				add ebx, 2
+				mov [fator], ebx
+				mov ecx, [iteracao]
+				inc ecx
+				mov [iteracao], ecx
+				fdivrp st1, st0 ;ultimo valor no topo
+
 
 
 
@@ -91,18 +97,13 @@ main:
 			mov ecx, [iteracao] 
 			inc ecx
 			mov [iteracao], ecx;ja manda para memoria para checagem par/impar
-			fdivrp st1, st0 ;st0/st1
+			fdivrp st1, st0 ;st0/st1 ultimo valor no topo
 			fld1 ;carrego 1 no topo
 			fld1
 			fadd st0, st1
 			fsubp st1, st0 ;coloquei -1 no topo => st1-st0
 			fmulp st1, st0
 			faddp st1, st0 ;atual resultado da serie aqui
-			fldz
-			fadd st0, st1 ;parti para a comparacao de erro
-
-
-
 
 		comparar: ;ver se o erro eh aceitavel
 			
